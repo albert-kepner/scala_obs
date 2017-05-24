@@ -8,23 +8,61 @@ import scala.math._
  */
 object Visualization {
 
+  val p: Int = 3 // Inverse Distance weighting exponent setting.
+
   /**
    * @param temperatures Known temperatures: pairs containing a location and the temperature at this location
    * @param location Location where to predict the temperature
    * @return The predicted temperature at `location`
    */
   def predictTemperature(temperatures: Iterable[(Location, Double)], location: Location): Double = {
+    var sumWi_X_Ui: Double = 0.0
+    var sumWi: Double = 0.0
+    var matchLocationTemp: Option[Double] = None
+    for ((l1, ui) <- temperatures) {
+      val d = greatCircleDistance(l1, location);
+      if (d < 1.0) {
+        matchLocationTemp = Some(ui)
+      }
+      matchLocationTemp match {
+        case None => {
+          val Wi: Double = W(l1, location)
+          sumWi_X_Ui += Wi * ui
+          sumWi += Wi
+        }
+        case _ => {}
+      }
+    }
+    matchLocationTemp match {
+      case None => {
+        sumWi_X_Ui / sumWi
+      }
 
-    ???
+      case _ => { matchLocationTemp.get }
+    }
   }
-  
+
+  def W(l1: Location, l2: Location): Double = {
+    val d = greatCircleDistance(l1, l2);
+    val w = distanceWeightW(d)
+    w
+  }
+
+  def distanceWeightW(distanceKm: Double): Double = {
+    var denominator: Double = 1.0
+    for (x <- (1 to p)) {
+      denominator *= distanceKm
+    }
+    1.0 / denominator
+  }
+
   /**
    * convert angle in degrees (latitude or longitude) to radians.
    */
-  def rad(degree: Double) : Double = {
+  def rad(degree: Double): Double = {
     degree / 180.0 * Pi
   }
-  def deg(rad: Double) : Double = {
+  def deg(rad: Double): Double = {
     180.0 * rad / Pi
   }
 
@@ -33,10 +71,10 @@ object Visualization {
     val lon1 = rad(l1.lon)
     val lat2 = rad(l2.lat)
     val lon2 = rad(l2.lon)
-    val deltaLon = abs(lon1 - lon2)    
+    val deltaLon = abs(lon1 - lon2)
     val x: Double = sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaLon)
     val angle = acos(x)
-    val radiusKm:Double = 6371
+    val radiusKm: Double = 6371
     val distanceKm = radiusKm * angle
     distanceKm
   }
