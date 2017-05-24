@@ -4,3 +4,6 @@ observatory/capstone-ui/target/
 observatory/project/project/target/
 observatory/target/
 .metadata/
+observatory/bin/
+observatory/.cache-main
+observatory/.cache-tests
