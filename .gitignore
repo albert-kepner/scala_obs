@@ -3,3 +3,4 @@ observatory/project/target/
 observatory/capstone-ui/target/
 observatory/project/project/target/
 observatory/target/
+.metadata/
