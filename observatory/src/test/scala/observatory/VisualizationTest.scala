@@ -1,6 +1,7 @@
 package observatory
 
 import org.junit.runner.RunWith
+import scala.math._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.prop.Checkers
@@ -60,6 +61,14 @@ class VisualizationTest extends FunSuite with Checkers {
     println(s"bad prediction color = $color")
     val test: Boolean = (color == Color(255,0,0) )
     assert(test, "bad predicted color 2")
+  }
+  test("great circle 1") {
+    val l1:Location = Location(0,0)
+    val l2:Location = Location(45,0)
+    // expected value for distance is 1/8 earth circumference 2 * pi * R / 8.0
+    val expected = Pi * 6371 / 4.0
+    val actual = Visualization.greatCircleDistance(l1, l2)
+    println(s"expected: $expected   actual: $actual ")
   }
 
 }
