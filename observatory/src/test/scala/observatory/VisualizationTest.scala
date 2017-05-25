@@ -70,5 +70,17 @@ class VisualizationTest extends FunSuite with Checkers {
     val actual = Visualization.greatCircleDistance(l1, l2)
     println(s"expected: $expected   actual: $actual ")
   }
+  test("temperature prediction") {
+    val l1 = Location(30, 17)
+    val l2 = Location(40, 17)
+    val l3 = Location(45, 17)
+    
+    val t1 = (l1, 5.0)
+    val t3 = (l3, 15.0)
+    val temps = List(t1, t3)
+    
+    val prediction = Visualization.predictTemperature(temps, l2)
+    println(s"prediciton = $prediction")
+  }
 
 }
