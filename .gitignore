@@ -7,3 +7,9 @@ observatory/target/
 observatory/bin/
 observatory/.cache-main
 observatory/.cache-tests
+observatory/.classpath
+observatory/.settings/org.eclipse.core.resources.prefs
+observatory/.settings/org.scala-ide.sdt.core.prefs
+observatory/capstone-ui/.classpath
+observatory/capstone-ui/.settings/org.eclipse.core.resources.prefs
+observatory/capstone-ui/.settings/org.scala-ide.sdt.core.prefs
