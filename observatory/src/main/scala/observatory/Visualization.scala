@@ -122,17 +122,17 @@ object Visualization {
   }
 
   def interpolateColorPair(a: ColorPair, b: ColorPair, x: Double): Color = {
+    // From: https://en.wikipedia.org/wiki/Linear_interpolation
+    def lerp(v0: Double, v1: Double, t: Double): Double = {
+      (1.0 - t) * v0 + t * v1
+    }
+    def lerpInt(v0: Int, v1: Int, t: Double): Int = {
+      ((1.0 - t) * v0 + t * v1).round.toInt
+    }
     val t: Double = (x - a._1) / (b._1 - a._1)
     val ac: Color = a._2
     val bc: Color = b._2
     Color(lerpInt(ac.red, bc.red, t), lerpInt(ac.green, bc.green, t), lerpInt(ac.blue, bc.blue, t))
-  }
-  // From: https://en.wikipedia.org/wiki/Linear_interpolation
-  def lerp(v0: Double, v1: Double, t: Double): Double = {
-    (1.0 - t) * v0 + t * v1
-  }
-  def lerpInt(v0: Int, v1: Int, t: Double): Int = {
-    ((1.0 - t) * v0 + t * v1).round.toInt
   }
 
   /**
@@ -141,7 +141,48 @@ object Visualization {
    * @return A 360×180 image where each pixel shows the predicted temperature at its location
    */
   def visualize(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)]): Image = {
-    ???
+
+    val debug: Boolean = false;
+
+    val imageWidth: Int = 360
+    val imageHeight: Int = 180
+
+    val startLon: Double = -180
+    val startLat: Double = 90
+
+    val endLat: Double = startLat + (imageHeight - 1)
+    val endLon: Double = startLon + (imageWidth - 1)
+
+    val pixLen: Integer = imageWidth * imageHeight
+    val pixels = new Array[Pixel](pixLen)
+
+    var lon = startLon
+    var lat = startLat
+    var index: Int = 0
+    while (index < pixLen) {
+      val pixelLoc: Location = Location(lat, lon)
+      val pixelTemp: Double = predictTemperature(temperatures, pixelLoc)
+      val pixelColor: Color = interpolateColor(colors, pixelTemp)
+      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 255)
+      pixels(index) = pixel
+      index += 1
+
+      if (debug) {
+        println(s"lat: $lat, lon: $lon, pixelTemp: $pixelTemp, pixelColor: $pixelColor")
+        println(s"pixel: $pixel")
+      }
+
+      lon += 1.0
+      if (lon > endLon) {
+        lon = startLon
+        lat += -1.0
+      }
+    }
+    val image: Image = Image(imageWidth, imageHeight, pixels)
+    if (debug || true) {
+      println(s"image: $image")
+    }
+    image
   }
 
 }
