@@ -8,31 +8,36 @@ import scala.math._
  */
 object Visualization {
 
-  val p: Int = 3 // Inverse Distance weighting exponent setting.
+  val p: Int = 2 // Inverse Distance weighting exponent setting.
 
   /**
    * @param temperatures Known temperatures: pairs containing a location and the temperature at this location
    * @param location Location where to predict the temperature
    * @return The predicted temperature at `location`
    */
-  def predictTemperature(temperatures: Iterable[(Location, Double)], location: Location): Double = {
+  def predictTemperature(temperatures: Iterable[(Location, Double)], location: Location, debug: Boolean = false): Double = {
     var sumWi_X_Ui: Double = 0.0
     var sumWi: Double = 0.0
     var matchLocationTemp: Option[Double] = None
+    if(debug) println(s"location = $location")
     for ((l1, ui) <- temperatures) {
       val d = greatCircleDistance(l1, location);
+      if(debug) println(s"d! = $d")
+      if(debug) println(s"      l1 = $l1, ui = $ui, d = $d")
       if (d < 1.0) {
         matchLocationTemp = Some(ui)
       }
       matchLocationTemp match {
         case None => {
-          val Wi: Double = W(l1, location)
-          sumWi_X_Ui += Wi * ui
+          val Wi: Double = W(l1, location, debug)
+          if(debug) println(s"Wi! = $Wi")
+          sumWi_X_Ui += (Wi * ui)
           sumWi += Wi
         }
         case _ => {}
       }
     }
+    val temp: Double =
     matchLocationTemp match {
       case None => {
         sumWi_X_Ui / sumWi
@@ -40,10 +45,12 @@ object Visualization {
 
       case _ => { matchLocationTemp.get }
     }
+    if(debug) println(s"temp = $temp")
+    temp
   }
 
-  def W(l1: Location, l2: Location): Double = {
-    val d = greatCircleDistance(l1, l2);
+  def W(l1: Location, l2: Location, debug: Boolean = false): Double = {
+    val d = greatCircleDistance(l1, l2, debug);
     val w = distanceWeightW(d)
     w
   }
@@ -66,7 +73,7 @@ object Visualization {
     180.0 * rad / Pi
   }
 
-  def greatCircleDistance(l1: Location, l2: Location): Double = {
+  def greatCircleDistance(l1: Location, l2: Location, debug: Boolean = false): Double = {
     val lat1 = rad(l1.lat)
     val lon1 = rad(l1.lon)
     val lat2 = rad(l2.lat)
@@ -76,6 +83,9 @@ object Visualization {
     val angle = acos(x)
     val radiusKm: Double = 6371
     val distanceKm = radiusKm * angle
+    if(debug) {
+      println(s"greatCircleDistance: l1 = $l1, l2 = $l2, distanceKm = $distanceKm")
+    }
     distanceKm
   }
   type ColorPair = (Double, Color)
