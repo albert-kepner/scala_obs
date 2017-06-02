@@ -55,7 +55,90 @@ object Visualization2 {
     zoom: Int,
     x: Int,
     y: Int): Image = {
-    ???
+    //    val loc: Location = Interaction.tileLocation(zoom, x, y)
+    val addZoomLevel: Int = 8
+    val debug: Boolean = false;
+
+    val imageWidth: Int = 1 << addZoomLevel
+    val imageHeight: Int = imageWidth
+
+    val pixLen: Integer = imageWidth * imageHeight
+    val pixels = new Array[Pixel](pixLen)
+
+    val twoPower: Int = imageWidth
+
+    var index: Int = 0
+
+    for (
+      col <- (0 until twoPower);
+      row <- (0 until twoPower)
+    ) {
+      val pixelLoc: Location = Interaction.tileLocation(zoom + addZoomLevel, x * twoPower + col, y * twoPower + row)
+      val pixelTemp: Double = {
+        val lat = pixelLoc.lat
+        val lon = pixelLoc.lon
+        val latLo = lat.floor.toInt
+        val latHi = lat.ceil.toInt
+        val lonLo = lon.floor.toInt
+        val lonHi = lon.ceil.toInt
+        val d00 = grid(latHi, lonLo)
+        val d01 = grid(latLo, lonLo)
+        val d10 = grid(latHi, lonHi)
+        val d11 = grid(latLo, lonHi)
+        val temp: Double = bilinearInterpolation(lon, lat, d00, d01, d10, d11)
+        temp 
+      }
+      val pixelColor: Color = Visualization.interpolateColor(colors, pixelTemp)
+      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 255)
+      pixels(index) = pixel
+      index += 1
+
+    }
+    val image: Image = Image(imageWidth, imageHeight, pixels)
+    if (debug || true) {
+      println(s"image: $image")
+    }
+    image
+  }
+  /**
+   * @param temperatures Known temperatures
+   * @param colors Color scale
+   * @param zoom Zoom level
+   * @param x X coordinate
+   * @param y Y coordinate
+   * @return A 256×256 image showing the contents of the tile defined by `x`, `y` and `zooms`
+   */
+  def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
+    val addZoomLevel: Int = 8
+    val debug: Boolean = false;
+
+    val imageWidth: Int = 1 << addZoomLevel
+    val imageHeight: Int = imageWidth
+
+    val pixLen: Integer = imageWidth * imageHeight
+    val pixels = new Array[Pixel](pixLen)
+
+    val twoPower: Int = imageWidth
+
+    var index: Int = 0
+
+    for (
+      col <- (0 until twoPower);
+      row <- (0 until twoPower)
+    ) {
+      val pixelLoc: Location = Interaction.tileLocation(zoom + addZoomLevel, x * twoPower + col, y * twoPower + row)
+      val pixelTemp: Double = Visualization.predictTemperature(temperatures, pixelLoc)
+      val pixelColor: Color = Visualization.interpolateColor(colors, pixelTemp)
+      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 255)
+      pixels(index) = pixel
+      index += 1
+
+    }
+    val image: Image = Image(imageWidth, imageHeight, pixels)
+    if (debug || true) {
+      println(s"image: $image")
+    }
+    image
   }
 
 }
