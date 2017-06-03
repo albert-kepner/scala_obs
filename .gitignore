@@ -14,6 +14,8 @@ observatory/.settings/org.scala-ide.sdt.core.prefs
 observatory/capstone-ui/.classpath
 observatory/capstone-ui/.settings/org.eclipse.core.resources.prefs
 observatory/capstone-ui/.settings/org.scala-ide.sdt.core.prefs
+observatory/.worksheet/
+fills01/.worksheet/
 fills01/src/main/resources/
 fills01/project/target/
 fills01/target/
