@@ -4,6 +4,7 @@ observatory/capstone-ui/target/
 observatory/project/project/target/
 observatory/target/
 .metadata/
+target/
 observatory/bin/
 observatory/.cache-main
 observatory/.cache-tests
@@ -13,3 +14,13 @@ observatory/.settings/org.scala-ide.sdt.core.prefs
 observatory/capstone-ui/.classpath
 observatory/capstone-ui/.settings/org.eclipse.core.resources.prefs
 observatory/capstone-ui/.settings/org.scala-ide.sdt.core.prefs
+fills01/src/main/resources/
+fills01/project/target/
+fills01/target/
+fills01/bin/
+fills01/.cache-main
+fills01/.cache-tests
+fills01/.classpath
+fills01/.settings/org.eclipse.core.resources.prefs
+fills01/.settings/org.scala-ide.sdt.core.prefs
+
