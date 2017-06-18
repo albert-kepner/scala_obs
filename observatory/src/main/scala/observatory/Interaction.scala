@@ -178,7 +178,7 @@ object Interaction {
     data match {
       case (year2, temperatures) => {
         val image = tile(temperatures, colors, zoom, col, row)
-        writeImageToFile("target/temp1", image, year, zoom, col, row)
+        writeImageToFile("target", image, year, zoom, col, row)
       }
     }
   }
