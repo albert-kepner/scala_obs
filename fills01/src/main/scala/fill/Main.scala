@@ -1,7 +1,7 @@
 package fill
 
 import java.lang.System
-
+// This is version 1 just reading raw fills.
 object Main extends App {
 
   def readFills(path: String): Unit = {
