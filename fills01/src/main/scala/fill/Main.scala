@@ -2,6 +2,7 @@ package fill
 
 import java.lang.System
 // This is version 1 just reading raw fills.
+// Version 2 added fields GPI, drugIsGeneric, rxNumber
 object Main extends App {
 
   def readFills(path: String): Unit = {
@@ -16,10 +17,13 @@ object Main extends App {
       if (x(0) == "PATIENT_ID") {
         false
       } else {
-        x.size == 10
+        x.size == 13
       }
     }
-    def fieldsToFill(x: Array[String]): RawFill = {
+    def fieldsToFill(aa: Array[String]): RawFill = {
+      def x(index: Int) : String = {
+        aa(index).trim
+      }
       RawFill(
         x(0),
         x(1),
@@ -28,16 +32,21 @@ object Main extends App {
         x(4),
         x(5),
         x(6),
-        RawFill.dateParse(x(7)),
+        x(7),
         x(8),
-        x(9))
+        x(9),
+        RawFill.dateParse(x(10)),
+        x(11),
+        x(12))
     }
 
     val fields = lines.map(x => x.split(",").map(y => y.trim)).filter(filterFields)
 
     val fills = fields.map(fieldsToFill)
-    val foo = fills.take(447000)
-    fills.take(944).foreach(println(_))
+    def noop (x: Any):Unit = {}
+//    val foo = fills.take(447000)
+    fills.take(6000).foreach( noop(_))
+    fills.take(5000).foreach(println(_))
     println(s"fills.size = ${fills.size}")
 
     val end1: Long = System.currentTimeMillis()
@@ -48,7 +57,7 @@ object Main extends App {
 
   }
 
-  readFills("/fill_qa_3drug_classes.csv")
+  readFills("/QA_FILL_DATA_18MONTHS.csv")
 
 }
 

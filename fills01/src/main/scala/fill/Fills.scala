@@ -21,6 +21,9 @@ case class RawFill(
     drugClass: String, 
     drugNDC: String,
     drugName: String,
+    gpi: String,
+    drugIsGeneric: String,
+    rxNumber: String,
     birthDate: Date,
     firstName: String, 
     lastName: String) {
