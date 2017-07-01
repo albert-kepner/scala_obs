@@ -86,63 +86,18 @@ object Interaction {
     }
     image
   }
-  //  def tileDebug(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Unit = {
-  //    val addZoomLevel: Int = 8
-  //    val debug: Boolean = false;
-  //
-  //    val imageWidth: Int = 1<<addZoomLevel
-  //    val imageHeight: Int = imageWidth
-  //
-  ////    val pixLen: Integer = imageWidth * imageHeight
-  ////    val pixels = new Array[Pixel](pixLen)
-  //
-  //    val twoPower: Int = imageWidth
-  //    
-  ////    var index: Int = 0
-  //
-  //    for (
-  //      col <- (0 until twoPower by 64);
-  //      row <- (0 until twoPower by 64)
-  //    ) {
-  //      val pixelLoc: Location = tileLocation(zoom + addZoomLevel, x * twoPower + col, y * twoPower + row)
-  //      val pixelTemp: Double = Visualization.predictTemperature(temperatures, pixelLoc)
-  //      val pixelColor: Color = Visualization.interpolateColor(colors, pixelTemp)
-  //      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 255)
-  //      val m1: String = s"col(x) = $col, row(y) = $row, pixelLoc = $pixelLoc, pixelTemp = $pixelTemp, pixelColor = $pixelColor"
-  //      println(m1)
-  ////      pixels(index) = pixel
-  ////      index += 1
-  //
-  //    }
-  ////    val image: Image = Image(imageWidth, imageHeight, pixels)
-  ////    if (debug || true) {
-  ////      println(s"image: $image")
-  ////    }
-  ////    image
-  //  }
-  //  def tileDebug2(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Unit = {
-  //    val addZoomLevel: Int = 8
-  //    val debug: Boolean = false;
-  //
-  //    val imageWidth: Int = 1<<addZoomLevel
-  //    val imageHeight: Int = imageWidth
-  //    val twoPower: Int = imageWidth
-  //    for (
-  //      col <- (0 until twoPower by 8);
-  //      row <- (0 until twoPower by 8)
-  //    ) {
-  //      val pixelLoc: Location = tileLocation(zoom + addZoomLevel, x * twoPower + col, y * twoPower + row)
-  //      val debugTemp: Boolean = (row == 192)
-  //      val pixelTemp: Double = Visualization.predictTemperature(temperatures, pixelLoc, debugTemp)
-  //      val pixelColor: Color = Visualization.interpolateColor(colors, pixelTemp)
-  //      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 255)
-  //      val m1: String = s"col(x) = $col, row(y) = $row, pixelLoc = $pixelLoc, pixelTemp = $pixelTemp, pixelColor = $pixelColor"
-  //      if(row == 192) {
-  //        println(m1)
-  //      }
-  //    }
-  //  }
-
+  /**
+   * Generate avg temp image tiles at 0-3 zoom levels for the given year.
+   */
+  def generateTilesForYear(year: Integer): Unit = {
+    val stationsFile = "/stations.csv"
+    val temperaturesFile = s"/$year.csv"
+    val allTempsForYear = Extraction.locateTemperatures(year, stationsFile, temperaturesFile)
+    val avgTempsForYear: Iterable[(Location, Double)] = Extraction.locationYearlyAverageRecords(allTempsForYear)
+    val dataOneYear: (Int, Iterable[(Location, Double)]) = (year, avgTempsForYear)
+    val yearlyData = List(dataOneYear)
+    generateTilesData1(yearlyData, generateImageStandardTempColor)
+  }
   /**
    * Generates all the tiles for zoom levels 0 to 3 (included), for all the given years.
    * @param yearlyData Sequence of (year, data), where `data` is some data associated with
@@ -174,6 +129,27 @@ object Interaction {
 
   type Data1 = (Int, Iterable[(Location, Double)])
 
+  def generateTilesData1(
+    yearlyData: Iterable[(Int, Iterable[(Location, Double)])],
+    generateImage: (Int, Int, Int, Int, Iterable[(Location, Double)]) => Unit): Unit = {
+    yearlyData.foreach {
+      _ match {
+        case (year, data) => {
+          for (zoom <- (0 to 3)) {
+            val twoPower: Int = 1 << zoom
+            for (
+              row <- 0 until twoPower;
+              col <- 0 until twoPower
+            ) {
+              generateImage(year, zoom, col, row, data)
+            }
+          }
+
+        }
+      }
+
+    }
+  }
   def generateImageWithColor(year: Int, zoom: Int, col: Int, row: Int, data: Data1, colors: Iterable[(Double, Color)]): Unit = {
     data match {
       case (year2, temperatures) => {
@@ -181,6 +157,13 @@ object Interaction {
         writeImageToFile("target", image, year, zoom, col, row)
       }
     }
+  }
+  def generateImageStandardTempColor(year: Int, zoom: Int, col: Int, row: Int, temperatures: Iterable[(Location, Double)]): Unit = {
+    val msg = s"make tile for year: $year, zoom: $zoom, col: $col, row: $row"
+    println(msg)
+    val image = tile(temperatures, Visualization.standardColors, zoom, col, row)
+    println("ready to write image to file at time = "+ new java.util.Date())
+    writeImageToFile("target", image, year, zoom, col, row)
   }
 
   def writeImageToFile(base: String, image: Image, year: Int, zoom: Int, x: Int, y: Int): Unit = {

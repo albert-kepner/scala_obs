@@ -128,5 +128,11 @@ class InteractionTest extends FunSuite with Checkers {
 
     Interaction.generateImageWithColor(1900, 0,0, 0, data1, colors)
   }
+  test("generateTilesForYear 1975") {
+    val startTime: Long = System.currentTimeMillis()
+    Interaction.generateTilesForYear(1975)
+    val endTime: Long = System.currentTimeMillis()
+    val elapsed: Float = (endTime - startTime) / 1000.0f
+  }
 
 }

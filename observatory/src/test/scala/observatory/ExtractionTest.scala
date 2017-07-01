@@ -68,35 +68,45 @@ class ExtractionTest extends FunSuite with BeforeAndAfterAll {
     println("/1975.csv TemperatureRaw list length = " + theList.length)
     theList.take(10).foreach { println(_) }
   }
-  
-  test("locateTemperatures for 1975 " ) {
+
+  test("locateTemperatures for 1975 ") {
     val theList = Extraction.locateTemperatures(1975, "/stations.csv", "/1975.csv")
-    println("1975 TemperatureDatum list sample take(10) = " )
-    def predFn(tuple: (LocalDate, Location, Double)) : Boolean = {
-      tuple._2 === Location(70.933,-8.667)
+    println("1975 TemperatureDatum list sample take(10) = ")
+    def predFn(tuple: (LocalDate, Location, Double)): Boolean = {
+      tuple._2 === Location(70.933, -8.667)
     }
     theList.filter(predFn).take(10).foreach { println _ }
   }
-  
+
   test("getStationsMap find example Location") {
-    val key = StationKey("010010","")
+    val key = StationKey("010010", "")
     val theMap = Extraction.getStationsMap("/stations.csv")
     val loc = theMap(key)
-    println("Location = "+loc)
+    println("Location = " + loc)
   }
-  
+
   test("locationYearlyAverageRecords...") {
-        val theList = Extraction.locateTemperatures(1975, "/stations.csv", "/1975.csv")
-    println("1975 TemperatureDatum list sample take(10) = " )
-    def predFn(tuple: (LocalDate, Location, Double)) : Boolean = {
-      tuple._2 === Location(70.933,-8.667)
+    val theList = Extraction.locateTemperatures(1975, "/stations.csv", "/1975.csv")
+    println("1975 TemperatureDatum list sample take(10) = ")
+    def predFn(tuple: (LocalDate, Location, Double)): Boolean = {
+      tuple._2 === Location(70.933, -8.667)
     }
     theList.filter(predFn).take(10).foreach { println _ }
-    
-    val anAverageList = Extraction.locationYearlyAverageRecords(theList.filter(predFn).take(10))
-    println("Average for selected location: "+Location(70.933,-8.667) )
-    anAverageList.foreach {println _ }
 
+    val anAverageList = Extraction.locationYearlyAverageRecords(theList.filter(predFn).take(10))
+    println("Average for selected location: " + Location(70.933, -8.667))
+    anAverageList.foreach { println _ }
+
+  }
+  test("locationYearlyAverageRecords..1975 length and timing.") {
+    val startTime: Long = System.currentTimeMillis()
+    val theList = Extraction.locateTemperatures(1975, "/stations.csv", "/1975.csv")
+
+    val anAverageList = Extraction.locationYearlyAverageRecords(theList)
+    println(s"locationYearlyAverageRecords anAverageList length = ${anAverageList.size}")
+    val endTime: Long = System.currentTimeMillis()
+    val elapsed: Float = (endTime - startTime)/ 1000f
+    println(s"elapsed seconds = $elapsed")
   }
 
 }

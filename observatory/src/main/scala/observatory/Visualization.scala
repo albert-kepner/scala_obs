@@ -9,6 +9,20 @@ import scala.math._
 object Visualization {
 
   val p: Int = 2 // Inverse Distance weighting exponent setting.
+  
+  def colorAt(temp: Double, r: Integer, g: Integer, b: Integer) : ColorPair = {
+    (temp, Color(r,g,b))
+  }
+  
+  val standardColors: List[(Double, Color)] = List(
+      colorAt(60, 255,255,255 ),
+      colorAt(32, 255, 0, 0 ),
+      colorAt(12, 255, 255, 0),
+      colorAt(0, 0, 255, 255),
+      colorAt(-15, 0, 0, 255),
+      colorAt(-50, 33, 0, 107),
+      colorAt(-60, 0,0,0)
+      )
 
   /**
    * @param temperatures Known temperatures: pairs containing a location and the temperature at this location
