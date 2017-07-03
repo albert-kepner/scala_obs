@@ -85,6 +85,37 @@ object Interaction {
     }
     image
   }
+  def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
+    val debug: Boolean = false;
+    val addZoomLevel: Int = 8
+    val imageWidth: Int = 1 << addZoomLevel
+    val imageHeight: Int = imageWidth
+
+    val pixLen: Integer = imageWidth * imageHeight
+    val pixels = new Array[Pixel](pixLen)
+
+    val twoPower: Int = imageWidth
+
+    var index: Int = 0
+
+    for (
+      row <- (0 until twoPower);
+      col <- (0 until twoPower)
+    ) {
+      val pixelLoc: Location = tileLocation(zoom + addZoomLevel, x * twoPower + col, y * twoPower + row)
+      val pixelTemp: Double = Visualization.predictTemperature(temperatures, pixelLoc)
+      val pixelColor: Color = Visualization.interpolateColor(colors, pixelTemp)
+      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 127)
+      pixels(index) = pixel
+      index += 1
+
+    }
+    val image: Image = Image(imageWidth, imageHeight, pixels)
+    if (debug || true) {
+      println(s"image: $image")
+    }
+    image
+  }
   /**
    * Generate avg temp image tiles at 0-3 zoom levels for the given year.
    */
