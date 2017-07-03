@@ -1,6 +1,6 @@
 package observatory
 
-import com.sksamuel.scrimage.{ Image, Pixel }
+import com.sksamuel.scrimage.{ Image, Pixel, ScaleMethod }
 
 import java.nio._
 import java.nio.file._
@@ -54,8 +54,7 @@ object Interaction {
    * @param y Y coordinate
    * @return A 256×256 image showing the contents of the tile defined by `x`, `y` and `zooms`
    */
-  def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
-    val addZoomLevel: Int = 8
+  def tileZoomLevel(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int, addZoomLevel: Int): Image = {
     val debug: Boolean = false;
 
     val imageWidth: Int = 1 << addZoomLevel
@@ -75,7 +74,7 @@ object Interaction {
       val pixelLoc: Location = tileLocation(zoom + addZoomLevel, x * twoPower + col, y * twoPower + row)
       val pixelTemp: Double = Visualization.predictTemperature(temperatures, pixelLoc)
       val pixelColor: Color = Visualization.interpolateColor(colors, pixelTemp)
-      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 255)
+      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 127)
       pixels(index) = pixel
       index += 1
 
@@ -153,7 +152,7 @@ object Interaction {
   def generateImageWithColor(year: Int, zoom: Int, col: Int, row: Int, data: Data1, colors: Iterable[(Double, Color)]): Unit = {
     data match {
       case (year2, temperatures) => {
-        val image = tile(temperatures, colors, zoom, col, row)
+        val image = tileZoomLevel(temperatures, colors, zoom, col, row, 8)
         writeImageToFile("target", image, year, zoom, col, row)
       }
     }
@@ -161,13 +160,15 @@ object Interaction {
   def generateImageStandardTempColor(year: Int, zoom: Int, col: Int, row: Int, temperatures: Iterable[(Location, Double)]): Unit = {
     val msg = s"make tile for year: $year, zoom: $zoom, col: $col, row: $row"
     println(msg)
-    val image = tile(temperatures, Visualization.standardColors, zoom, col, row)
+    val image = tileZoomLevel(temperatures, Visualization.standardColors, zoom, col, row, 6)
+    val ref = new Object()
+    val image2 = image.scaleTo(256,256,ScaleMethod.FastScale)
     println("ready to write image to file at time = "+ new java.util.Date())
-    writeImageToFile("target", image, year, zoom, col, row)
+    writeImageToFile("target", image2, year, zoom, col, row)
   }
 
   def writeImageToFile(base: String, image: Image, year: Int, zoom: Int, x: Int, y: Int): Unit = {
-    val filePath: String = s"$base/temperatures/$year/$zoom/$x.$y.png"
+    val filePath: String = s"$base/temperatures/$year/$zoom/${x}-${y}.png"
     val dirPath: String = s"$base/temperatures/$year/$zoom/"
     println(s"filePath = $filePath")
     try {

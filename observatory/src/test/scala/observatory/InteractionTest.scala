@@ -63,7 +63,7 @@ class InteractionTest extends FunSuite with Checkers {
     val p3: (Double, Color) = (30, red)
     val colors = List(p1, p2, p3)
 
-    val image = Interaction.tile(temps, colors, 5, 16, 16)
+    val image = Interaction.tileZoomLevel(temps, colors, 5, 16, 16, 8)
   }
   test("tile Image world tile 1") {
     val l1 = Location(45, -90)
@@ -83,7 +83,7 @@ class InteractionTest extends FunSuite with Checkers {
     val p3: (Double, Color) = (30, red)
     val colors = List(p1, p2, p3)
 
-    val image = Interaction.tile(temps, colors, 0,0,0)
+    val image = Interaction.tileZoomLevel(temps, colors, 0,0,0, 8)
   }
 //  test("tileDebug") {
 //    val l1 = Location(45, -90)
