@@ -111,10 +111,27 @@ class Grid() {
     }
   }
 
-  def get(lat: Int, lon: Int): Double = grid(lat - Grid.minLat)(lon - Grid.minLon)
-
+  def get(lat: Int, lon: Int): Double = {
+    val (lat2, lon2) = locInRange(lat, lon)
+    grid(lat2 - Grid.minLat)(lon2 - Grid.minLon)
+  }
+  def locInRange(lat: Int, lon: Int) : (Int, Int) = {
+    val lat2:Int = lat match {
+      case _ if(lat < Grid.minLat) => Grid.minLat
+      case _ if(lat > Grid.maxLat) => Grid.maxLat
+      case _ => lat
+    }
+    val lon2:Int = lon match {
+      case _ if(lon < Grid.minLon) => Grid.minLon
+      case _ if(lon > Grid.maxLon) => Grid.maxLon
+      case _ => lon     
+    }
+    (lat2, lon2)
+  }
+  
   def set(lat: Int, lon: Int, temp: Double): Unit = {
-    grid(lat - Grid.minLat)(lon - Grid.minLon) = temp
+    val (lat2, lon2) = locInRange(lat, lon)
+    grid(lat2 - Grid.minLat)(lon2 - Grid.minLon) = temp
   }
 }
 
