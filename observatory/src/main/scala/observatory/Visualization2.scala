@@ -24,6 +24,9 @@ object Visualization2 {
     d01: Double,
     d10: Double,
     d11: Double): Double = {
+//    if (x == 0.0 && y == 0.0) {
+//      println(s"x: $x y: $y d00: $d00 d01: $d01 d10: $d10 d11: $d11")
+//    }
     def f(a: Int, b: Int): Double = {
       (a, b) match {
         case (0, 0) => d00
@@ -56,6 +59,9 @@ object Visualization2 {
     x: Int,
     y: Int): Image = {
     //    val loc: Location = Interaction.tileLocation(zoom, x, y)
+    val m1: String = s"x = $x; y = $y; grid(x,y) = ${grid(x, y)}; zoom = $zoom"
+    println(m1);
+    showColors(colors)
     val addZoomLevel: Int = 8
     val debug: Boolean = false;
 
@@ -81,15 +87,19 @@ object Visualization2 {
         val latHi = lat.ceil.toInt
         val lonLo = lon.floor.toInt
         val lonHi = lon.ceil.toInt
-        val d00 = grid(latHi, lonLo)
-        val d01 = grid(latLo, lonLo)
-        val d10 = grid(latHi, lonHi)
-        val d11 = grid(latLo, lonHi)
-        val temp: Double = bilinearInterpolation(lon, lat, d00, d01, d10, d11)
-        temp 
+        val d00 = grid(lonLo, latLo)
+        val d01 = grid(lonLo, latHi)
+        val d10 = grid(lonHi, latLo)
+        val d11 = grid(lonHi, latHi)
+        val temp: Double = bilinearInterpolation(lon - lonLo, lat - latLo, d00, d01, d10, d11)
+        temp
       }
       val pixelColor: Color = Visualization.interpolateColor(colors, pixelTemp)
-      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 255)
+      if (row == 0 && col == 0) {
+        println(m1);
+        println(s"pixelLoc = $pixelLoc; pixelTemp = $pixelTemp; pixelColor = $pixelColor")
+      }
+      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 127)
       pixels(index) = pixel
       index += 1
 
@@ -99,6 +109,11 @@ object Visualization2 {
       println(s"image: $image")
     }
     image
+  }
+  def showColors(colors: Iterable[(Double, Color)]): Unit = {
+    for ((t, c) <- colors) {
+      println(s"Temp: $t; Color: $c")
+    }
   }
   /**
    * @param temperatures Known temperatures
