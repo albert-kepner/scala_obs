@@ -24,9 +24,9 @@ object Visualization2 {
     d01: Double,
     d10: Double,
     d11: Double): Double = {
-//    if (x == 0.0 && y == 0.0) {
-//      println(s"x: $x y: $y d00: $d00 d01: $d01 d10: $d10 d11: $d11")
-//    }
+    //    if (x == 0.0 && y == 0.0) {
+    //      println(s"x: $x y: $y d00: $d00 d01: $d01 d10: $d10 d11: $d11")
+    //    }
     def f(a: Int, b: Int): Double = {
       (a, b) match {
         case (0, 0) => d00
@@ -43,23 +43,23 @@ object Visualization2 {
     val result = a_00 + a_10 * x + a_01 * y + a_11 * x * y
     result
   }
-  /** Rewrite...
+  /**
+   * Rewrite...
    * Based on bilinear Interpolation wiki article at: https://en.wikipedia.org/wiki/Bilinear_interpolation#Unit_Square
    */
-    def bilinearInterpolation(
+  def bilinearInterpolation(
     x: Double,
     y: Double,
     d00: Double,
     d01: Double,
     d10: Double,
     d11: Double): Double = {
-      val result: Double = d00 * (1.0 - x) * (1.0 - y) +
+    val result: Double = d00 * (1.0 - x) * (1.0 - y) +
       d10 * x * (1.0 - y) +
       d01 * (1.0 - x) * y +
       d11 * x * y
-      result
-    }
-
+    result
+  }
 
   /**
    * @param grid Grid to visualize
@@ -93,8 +93,8 @@ object Visualization2 {
     var index: Int = 0
 
     for (
-      col <- (0 until twoPower);
-      row <- (0 until twoPower)
+      row <- (0 until twoPower);
+      col <- (0 until twoPower)
     ) {
       val pixelLoc: Location = Interaction.tileLocation(zoom + addZoomLevel, x * twoPower + col, y * twoPower + row)
       val pixelTemp: Double = {
