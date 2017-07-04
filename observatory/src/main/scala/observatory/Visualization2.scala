@@ -17,7 +17,7 @@ object Visualization2 {
    * @return A guess of the value at (x, y) based on the four known values, using bilinear interpolation
    *         See https://en.wikipedia.org/wiki/Bilinear_interpolation#Unit_Square
    */
-  def bilinearInterpolation(
+  def bilinearInterpolationOrig(
     x: Double,
     y: Double,
     d00: Double,
@@ -43,6 +43,23 @@ object Visualization2 {
     val result = a_00 + a_10 * x + a_01 * y + a_11 * x * y
     result
   }
+  /** Rewrite...
+   * Based on bilinear Interpolation wiki article at: https://en.wikipedia.org/wiki/Bilinear_interpolation#Unit_Square
+   */
+    def bilinearInterpolation(
+    x: Double,
+    y: Double,
+    d00: Double,
+    d01: Double,
+    d10: Double,
+    d11: Double): Double = {
+      val result: Double = d00 * (1.0 - x) * (1.0 - y) +
+      d10 * x * (1.0 - y) +
+      d01 * (1.0 - x) * y +
+      d11 * x * y
+      result
+    }
+
 
   /**
    * @param grid Grid to visualize
@@ -87,11 +104,11 @@ object Visualization2 {
         val latHi = lat.ceil.toInt
         val lonLo = lon.floor.toInt
         val lonHi = lon.ceil.toInt
-        val d00 = grid(lonLo, latLo)
-        val d01 = grid(lonLo, latHi)
-        val d10 = grid(lonHi, latLo)
-        val d11 = grid(lonHi, latHi)
-        val temp: Double = bilinearInterpolation(lon - lonLo, lat - latLo, d00, d01, d10, d11)
+        val d00 = grid(lonLo, latHi)
+        val d01 = grid(lonLo, latLo)
+        val d10 = grid(lonHi, latHi)
+        val d11 = grid(lonHi, latLo)
+        val temp: Double = bilinearInterpolation(lon - lonLo, latHi - lat, d00, d01, d10, d11)
         temp
       }
       val pixelColor: Color = Visualization.interpolateColor(colors, pixelTemp)

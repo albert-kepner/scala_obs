@@ -27,15 +27,15 @@ class Visualization2Test extends FunSuite with Checkers {
     println(s"interp (0.1,0.1) = $interp")
   }
 
-  test("interp (0.9,0.9)") {
-    val x = 0.9
-    val y = 0.9
-    val d00 = 0d
-    val d10 = 2.0
-    val d01 = 10.0
-    val d11 = 12.0
+  test("interp ( 8.1, -50, 12.6, -1 at 0,0)") {
+    val x = 0.0
+    val y = 0.0
+    val d00 = 8.1
+    val d01 = -50
+    val d10 = 12.6
+    val d11 = -1.0
     val interp = Visualization2.bilinearInterpolation(x, y, d00, d01, d10, d11)
-    println(s"interp (0.9,0.9) = $interp")
+    println(s"interp ( 8.1, -50, 12.6, -1 at 0,0) = $interp")
   }
 
 
