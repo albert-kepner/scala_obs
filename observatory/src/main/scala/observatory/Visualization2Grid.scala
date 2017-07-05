@@ -47,7 +47,7 @@ object Visualization2Grid {
         val d01 = grid(lonLo, latLo)
         val d10 = grid(lonHi, latHi)
         val d11 = grid(lonHi, latLo)
-        val temp: Double = Visualization2.bilinearInterpolation(lon - lonLo, latHi - lat, d00, d01, d10, d11)
+        val temp: Double = Visualization2.bilinearInterpolation(lon - lonLo, lat - latLo, d00, d01, d10, d11)
         // println (s" d00, d01, d10, d11 = $d00, $d01, $d10, $d11  temp = $temp ")
         temp
       }
