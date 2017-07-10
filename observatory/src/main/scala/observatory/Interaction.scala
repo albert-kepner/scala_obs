@@ -213,5 +213,31 @@ object Interaction {
     }
 
   }
+  def writeImageToFileDeviations(base: String, image: Image, year: Int, zoom: Int, x: Int, y: Int): Unit = {
+    val filePath: String = s"$base/deviations/$year/$zoom/${x}-${y}.png"
+    val dirPath: String = s"$base/deviations/$year/$zoom/"
+    println(s"filePath = $filePath")
+    try {
+      val dir: File = new File(dirPath);
+      println(s"dirPath = $dirPath")
+      val newDirs: Boolean = dir.mkdirs()
+      println(s"newDirs = $newDirs")
+      image.output(Paths.get(filePath))
+    } catch {
+      case e: Exception => e.printStackTrace
+    }
+
+  }
+  /** generateGridForyear **/
+    def generateGridForyear(year: Integer): Unit = {
+    val stationsFile = "/stations.csv"
+    val temperaturesFile = s"/$year.csv"
+    val allTempsForYear = Extraction.locateTemperatures(year, stationsFile, temperaturesFile)
+    val avgTempsForYear: Iterable[(Location, Double)] = Extraction.locationYearlyAverageRecords(allTempsForYear)
+    val dataOneYear: (Int, Iterable[(Location, Double)]) = (year, avgTempsForYear)
+    val yearlyData = List(dataOneYear)
+    // generateTilesData1(yearlyData, generateImageStandardTempColor)
+  }
+
 
 }
