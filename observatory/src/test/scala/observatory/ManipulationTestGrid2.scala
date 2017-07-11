@@ -6,7 +6,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.prop.Checkers
 
 @RunWith(classOf[JUnitRunner])
-class ManipulationTestGrid extends FunSuite with Checkers {
+class ManipulationTestGrid2 extends FunSuite with Checkers {
 
   //  test("generateTilesFromGridForYear4 1975") {
   //    Manipulation.generateTilesFromGridForYear4(1975)
@@ -16,9 +16,9 @@ class ManipulationTestGrid extends FunSuite with Checkers {
   //    Manipulation.generateTilesForAverageYearRange(1975, 1989)
   //  }
 
-  test("deviations from 1990 to 2000") {
+  test("deviations from 2001 to 2015") {
 
-    Manipulation.generateTilesForDeviations(1990, 2000, 1975, 1989)
+    Manipulation.generateTilesForDeviations(2001, 2015, 1975, 1989)
 
   }
 

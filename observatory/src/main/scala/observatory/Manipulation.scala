@@ -342,13 +342,46 @@ object Manipulation {
       ) {
         val x = col
         val y = row
-        val colors = Visualization.standardColors
+        val colors = Visualization.deviationColors
         val image: Image = Visualization2.visualizeGrid4(deviations, colors, zoom, x, y)
         println("ready to write image to file at time = " + new java.util.Date())
         Interaction.writeImageToFileDeviations("target", image, targetYear, zoom, x, y)
       }
     }
 
+    val end: Long = System.currentTimeMillis()
+    val elapsed: Float = (end - start) / 1000.0f
+    println(s"Elapsed time for run = $elapsed")
+  }
+  def generateTilesForDeviations(fromYear: Int, toYear: Int, year1: Int, year2: Int): Unit = {
+    val start: Long = System.currentTimeMillis()
+    val normals = Manipulation.yearRangeAverageGrid4(year1, year2)
+    for (targetYear <- (fromYear to toYear)) {
+
+      println(s"year = $targetYear")
+      val stationsFile = "/stations.csv"
+      val temperaturesFile = s"/$targetYear.csv"
+      val allTempsForYear = Extraction.locateTemperatures(targetYear, stationsFile, temperaturesFile)
+      val avgTempsForYear: Iterable[(Location, Double)] = Extraction.locationYearlyAverageRecords(allTempsForYear)
+      println(s"temps for one year = $targetYear at time: " + new java.util.Date())
+
+      var deviations = Manipulation.deviation4(avgTempsForYear, normals)
+      println("15 year deviations for year $targetYear done at time: " + new java.util.Date())
+      for (zoom <- (0 to 3)) {
+        val twoPower: Int = 1 << zoom
+        for (
+          row <- 0 until twoPower;
+          col <- 0 until twoPower
+        ) {
+          val x = col
+          val y = row
+          val colors = Visualization.deviationColors
+          val image: Image = Visualization2.visualizeGrid4(deviations, colors, zoom, x, y)
+          println("ready to write image to file at time = " + new java.util.Date())
+          Interaction.writeImageToFileDeviations("target", image, targetYear, zoom, x, y)
+        }
+      }
+    }
     val end: Long = System.currentTimeMillis()
     val elapsed: Float = (end - start) / 1000.0f
     println(s"Elapsed time for run = $elapsed")
