@@ -333,7 +333,7 @@ object Manipulation {
     println(s"temps for one year = $targetYear at time: " + new java.util.Date())
 
     var deviations = Manipulation.deviation4(avgTempsForYear, normals)
-    println("15 year deviations for year $targetYear done at time: " + new java.util.Date())
+    println(s"15 year deviations for year $targetYear done at time: " + new java.util.Date())
     for (zoom <- (0 to 3)) {
       val twoPower: Int = 1 << zoom
       for (
@@ -366,7 +366,7 @@ object Manipulation {
       println(s"temps for one year = $targetYear at time: " + new java.util.Date())
 
       var deviations = Manipulation.deviation4(avgTempsForYear, normals)
-      println("15 year deviations for year $targetYear done at time: " + new java.util.Date())
+      println(s"15 year deviations for year $targetYear done at time: " + new java.util.Date())
       for (zoom <- (0 to 3)) {
         val twoPower: Int = 1 << zoom
         for (
