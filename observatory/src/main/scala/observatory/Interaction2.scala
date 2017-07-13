@@ -82,7 +82,7 @@ object Interaction2 {
       {
         val theLayer: Layer = selectedLayer()
         val year: Int = selectedYear()
-        s"${theLayer.layerName.id} (${year})"
+        s"${theLayer.layerName} (${year})"
       })
   }
 

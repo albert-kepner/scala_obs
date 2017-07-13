@@ -1,5 +1,7 @@
 package observatory
 
+
+
 object Work2 {
 
   type s1 = List[String]
@@ -43,5 +45,8 @@ object Work2 {
                                                   //| year = 1989
                                                   //| year = 1990
   }
+  
+  
+  println(LayerName.Temperatures.toString)        //> Temperatures
 
 }
