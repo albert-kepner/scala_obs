@@ -9,20 +9,27 @@ import scala.math._
 object Visualization {
 
   val p: Int = 2 // Inverse Distance weighting exponent setting.
-  
-  def colorAt(temp: Double, r: Integer, g: Integer, b: Integer) : ColorPair = {
-    (temp, Color(r,g,b))
+
+  def colorAt(temp: Double, r: Integer, g: Integer, b: Integer): ColorPair = {
+    (temp, Color(r, g, b))
   }
-  
+
   val standardColors: List[(Double, Color)] = List(
-      colorAt(60, 255,255,255 ),
-      colorAt(32, 255, 0, 0 ),
-      colorAt(12, 255, 255, 0),
-      colorAt(0, 0, 255, 255),
-      colorAt(-15, 0, 0, 255),
-      colorAt(-50, 33, 0, 107),
-      colorAt(-60, 0,0,0)
-      )
+    colorAt(60, 255, 255, 255),
+    colorAt(32, 255, 0, 0),
+    colorAt(12, 255, 255, 0),
+    colorAt(0, 0, 255, 255),
+    colorAt(-15, 0, 0, 255),
+    colorAt(-50, 33, 0, 107),
+    colorAt(-60, 0, 0, 0))
+
+  val deviationColors: List[(Double, Color)] = List(
+    colorAt(7, 0, 0, 0),
+    colorAt(4, 255, 0, 0),
+    colorAt(2, 255, 255, 0),
+    colorAt(0, 255, 255, 255),
+    colorAt(-2, 0, 255, 255),
+    colorAt(-7, 0, 0, 255))
 
   /**
    * @param temperatures Known temperatures: pairs containing a location and the temperature at this location
@@ -33,18 +40,18 @@ object Visualization {
     var sumWi_X_Ui: Double = 0.0
     var sumWi: Double = 0.0
     var matchLocationTemp: Option[Double] = None
-    if(debug) println(s"location = $location")
+    if (debug) println(s"location = $location")
     for ((l1, ui) <- temperatures) {
       val d = greatCircleDistance(l1, location);
-      if(debug) println(s"d! = $d")
-      if(debug) println(s"      l1 = $l1, ui = $ui, d = $d")
+      if (debug) println(s"d! = $d")
+      if (debug) println(s"      l1 = $l1, ui = $ui, d = $d")
       if (d < 1.0) {
         matchLocationTemp = Some(ui)
       }
       matchLocationTemp match {
         case None => {
           val Wi: Double = W(l1, location, debug)
-          if(debug) println(s"Wi! = $Wi")
+          if (debug) println(s"Wi! = $Wi")
           sumWi_X_Ui += (Wi * ui)
           sumWi += Wi
         }
@@ -52,14 +59,14 @@ object Visualization {
       }
     }
     val temp: Double =
-    matchLocationTemp match {
-      case None => {
-        sumWi_X_Ui / sumWi
-      }
+      matchLocationTemp match {
+        case None => {
+          sumWi_X_Ui / sumWi
+        }
 
-      case _ => { matchLocationTemp.get }
-    }
-    if(debug) println(s"temp = $temp")
+        case _ => { matchLocationTemp.get }
+      }
+    if (debug) println(s"temp = $temp")
     temp
   }
 
@@ -97,7 +104,7 @@ object Visualization {
     val angle = acos(x)
     val radiusKm: Double = 6371
     val distanceKm = radiusKm * angle
-    if(debug) {
+    if (debug) {
       println(s"greatCircleDistance: l1 = $l1, l2 = $l2, distanceKm = $distanceKm")
     }
     distanceKm

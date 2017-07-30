@@ -62,6 +62,26 @@ object Visualization2 {
   }
 
   /**
+   * Rewrite...(Interpolate within 4 x 4 grid
+   * Based on bilinear Interpolation wiki article at: https://en.wikipedia.org/wiki/Bilinear_interpolation#Unit_Square
+   */
+  def bilinearInterpolation4(
+    x4: Double,
+    y4: Double,
+    d00: Double,
+    d01: Double,
+    d10: Double,
+    d11: Double): Double = {
+    val x = x4/4.0
+    val y = y4/4.0
+    val result: Double = d00 * (1.0 - x) * (1.0 - y) +
+      d10 * x * (1.0 - y) +
+      d01 * (1.0 - x) * y +
+      d11 * x * y
+    result
+  }
+
+  /**
    * @param grid Grid to visualize
    * @param colors Color scale to use
    * @param zoom Zoom level of the tile to visualize
@@ -75,7 +95,6 @@ object Visualization2 {
     zoom: Int,
     x: Int,
     y: Int): Image = {
-    //    val loc: Location = Interaction.tileLocation(zoom, x, y)
     val m1: String = s"x = $x; y = $y; grid(x,y) = ${grid(x, y)}; zoom = $zoom"
     println(m1);
     showColors(colors)
@@ -104,10 +123,14 @@ object Visualization2 {
         val latHi = lat.ceil.toInt
         val lonLo = lon.floor.toInt
         val lonHi = lon.ceil.toInt
-        val d00 = grid(lonLo, latHi)
-        val d01 = grid(lonLo, latLo)
-        val d10 = grid(lonHi, latHi)
-        val d11 = grid(lonHi, latLo)
+//        val d00 = grid(lonLo, latHi)
+//        val d01 = grid(lonLo, latLo)
+//        val d10 = grid(lonHi, latHi)
+//        val d11 = grid(lonHi, latLo)
+        val d00 = grid(latHi, lonLo)
+        val d01 = grid(latLo, lonLo)
+        val d10 = grid(latHi, lonHi)
+        val d11 = grid(latLo, lonHi)
         val temp: Double = bilinearInterpolation(lon - lonLo, latHi - lat, d00, d01, d10, d11)
         temp
       }
@@ -126,6 +149,103 @@ object Visualization2 {
       println(s"image: $image")
     }
     image
+  }
+  /**
+   * @param grid Grid to visualize (sparse grid with data points every 4 degrees)
+   * @param colors Color scale to use
+   * @param zoom Zoom level of the tile to visualize
+   * @param x X value of the tile to visualize
+   * @param y Y value of the tile to visualize
+   * @return The image of the tile at (x, y, zoom) showing the grid using the given color scale
+   */
+  def visualizeGrid4(
+    grid: (Int, Int) => Double,
+    colors: Iterable[(Double, Color)],
+    zoom: Int,
+    x: Int,
+    y: Int): Image = {
+    val m1: String = s"x = $x; y = $y; grid(x,y) = ${grid(x, y)}; zoom = $zoom"
+    println(m1);
+    showColors(colors)
+    val addZoomLevel: Int = 8
+    val debug: Boolean = false;
+
+    val imageWidth: Int = 1 << addZoomLevel
+    val imageHeight: Int = imageWidth
+
+    val pixLen: Integer = imageWidth * imageHeight
+    val pixels = new Array[Pixel](pixLen)
+
+    val twoPower: Int = imageWidth
+
+    var index: Int = 0
+
+    for (
+      row <- (0 until twoPower);
+      col <- (0 until twoPower)
+    ) {
+      val pixelLoc: Location = Interaction.tileLocation(zoom + addZoomLevel, x * twoPower + col, y * twoPower + row)
+      val pixelTemp: Double = {
+        val lat = pixelLoc.lat
+        val lon = pixelLoc.lon
+        val latLo = latLo4(lat)
+        val latHi = latHi4(lat)
+        val lonLo = lonLo4(lon)
+        val lonHi = lonHi4(lon)
+        val d00 = grid(latHi, lonLo)
+        val d01 = grid(latLo, lonLo)
+        val d10 = grid(latHi, lonHi)
+        val d11 = grid(latLo, lonHi)
+        val temp: Double = bilinearInterpolation4(lon - lonLo, latHi - lat, d00, d01, d10, d11)
+        temp
+      }
+      val pixelColor: Color = Visualization.interpolateColor(colors, pixelTemp)
+      if (row == 0 && col == 0) {
+        println(m1);
+        println(s"pixelLoc = $pixelLoc; pixelTemp = $pixelTemp; pixelColor = $pixelColor")
+      }
+      val pixel: Pixel = Pixel(pixelColor.red, pixelColor.green, pixelColor.blue, 127)
+      pixels(index) = pixel
+      index += 1
+
+    }
+    val image: Image = Image(imageWidth, imageHeight, pixels)
+    if (debug || true) {
+      println(s"image: $image")
+    }
+    image
+  }
+  def latHi4(lat: Double) : Int = {
+    val lat1 = (lat/4.0).ceil.toInt * 4
+    if(lat1 > 88) {
+      88
+    } else {
+      lat1
+    }
+  }
+  def latLo4(lat: Double) : Int = {
+    val lat1 = (lat/4.0).floor.toInt * 4
+    if(lat1 < -88) {
+      -88
+    } else {
+      lat1
+    }
+  }
+  def lonHi4(lon: Double) : Int = {
+    val lon1 = (lon/4.0).ceil.toInt * 4
+    if(lon1 > 180) {
+      180
+    } else {
+      lon1
+    }
+  }
+  def lonLo4(lon: Double) : Int = {
+    val lon1 = (lon/4.0).floor.toInt * 4
+    if(lon1 < -180) {
+      -180
+    } else {
+      lon1
+    }
   }
   def showColors(colors: Iterable[(Double, Color)]): Unit = {
     for ((t, c) <- colors) {
