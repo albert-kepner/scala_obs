@@ -144,10 +144,10 @@ object MainTarg extends App {
 
   }
   
-  compareCSV("CHOL_table_export", "CHOL_A2_table_export");
-  compareCSV("DIAB_table_export", "DIAB_A2_table_export");
-  compareCSV("HRM_table_export", "HRM_A2_table_export");
-  compareCSV("HYP_table_export", "HYP_A2_table_export");
-  compareCSV("SUPD_table_export", "SUPD_A2_table_export");
+  compareCSV("CHOL_BEFORE_table_export", "CHOL_AFTER_table_export");
+  compareCSV("DIAB_BEFORE_table_export", "DIAB_AFTER_table_export");
+  compareCSV("HRM_BEFORE_table_export", "HRM_AFTER_table_export");
+  compareCSV("HYP_BEFORE_table_export", "HYP_AFTER_table_export");
+  compareCSV("SUPD_BEFORE_table_export", "SUPD_AFTER_table_export");
 }
 
