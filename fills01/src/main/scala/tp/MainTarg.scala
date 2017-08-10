@@ -14,6 +14,8 @@ object MainTarg extends App {
     val start1: Long = System.currentTimeMillis()
 
     val stream = getClass.getResourceAsStream(path)
+    println(s"readCSV path = $path")
+
     val lines = scala.io.Source.fromInputStream(stream).getLines
     def filterFields(x: Array[String]): Boolean = {
       // ignore CSV file header line
@@ -95,13 +97,46 @@ object MainTarg extends App {
       notInList
     }
     
-    def samePatientDetails(): List[(String, String)] = {
+    def changePatientDetails(): List[(String, String)] = {
       val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield { 
         pairsMatchingReferencePair(pair, afterPats).map( pair2 => (pair, pair2 ) ).toList
       }
 
       val listOfPairs: List[(String, String)] = 
         for( l1 <- rowsBeforeAfter; l2 <- l1 if(!(l2._1._2.matchDetail(l2._2._2) ) ) ) yield { 
+          (l2._1._1, l2._2._1) 
+          }
+      listOfPairs
+    }
+    def changePatientRx(): List[(String, String)] = {
+      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield { 
+        pairsMatchingReferencePair(pair, afterPats).map( pair2 => (pair, pair2 ) ).toList
+      }
+
+      val listOfPairs: List[(String, String)] = 
+        for( l1 <- rowsBeforeAfter; l2 <- l1 if(!(l2._1._2.matchRx(l2._2._2) ) ) ) yield { 
+          (l2._1._1, l2._2._1) 
+          }
+      listOfPairs
+    }
+    def changePatientPlan(): List[(String, String)] = {
+      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield { 
+        pairsMatchingReferencePair(pair, afterPats).map( pair2 => (pair, pair2 ) ).toList
+      }
+
+      val listOfPairs: List[(String, String)] = 
+        for( l1 <- rowsBeforeAfter; l2 <- l1 if(!(l2._1._2.matchPlan(l2._2._2) ) ) ) yield { 
+          (l2._1._1, l2._2._1) 
+          }
+      listOfPairs
+    }
+    def changePatientPDC(): List[(String, String)] = {
+      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield { 
+        pairsMatchingReferencePair(pair, afterPats).map( pair2 => (pair, pair2 ) ).toList
+      }
+
+      val listOfPairs: List[(String, String)] = 
+        for( l1 <- rowsBeforeAfter; l2 <- l1 if(!(l2._1._2.matchPDC(l2._2._2) ) ) ) yield { 
           (l2._1._1, l2._2._1) 
           }
       listOfPairs
@@ -113,8 +148,17 @@ object MainTarg extends App {
     val afterAdded = afterPatsAdded()
     println(s"afterAdded.size = ${afterAdded.size} ");
     
-    val changedDetails = samePatientDetails();
+    val changedDetails = changePatientDetails();
     println(s"changedDetails.size = ${changedDetails.size} ")
+
+    val changedRx = changePatientRx();
+    println(s"changedRx.size = ${changedRx.size} ")
+
+    val changedPlan = changePatientPlan();
+    println(s"changedPlan.size = ${changedPlan.size} ")
+
+    val changedPDC = changePatientPDC();
+    println(s"changedPDC.size = ${changedPDC.size} ")
 
     def writePatientCSVFile(filepath: String, patients: List[(String, RawPat)]): Unit = {
       val pw = new PrintWriter(new File(filepath))
@@ -141,6 +185,12 @@ object MainTarg extends App {
     writePatientCSVFile("output/" + file2 + "_DROPPED.csv", beforeDropped);
     
     writeDetailsCSVFile("output2/" + file2 + "_CHANGED.csv", changedDetails);
+
+    writeDetailsCSVFile("output2/" + file2 + "_CHANGED_RX.csv", changedRx);
+
+    writeDetailsCSVFile("output2/" + file2 + "_CHANGED_PLAN.csv", changedPlan);
+
+    writeDetailsCSVFile("output2/" + file2 + "_CHANGED_PDC.csv", changedPDC);
 
   }
   
