@@ -8,7 +8,11 @@ object RawPat {
   val sdf: SimpleDateFormat = new SimpleDateFormat("M/d/yyyy")
 
   def dateParse(dateStr: String): java.util.Date = {
-    sdf.parse(dateStr)
+    try {
+      sdf.parse(dateStr)
+    } catch {
+      case e: Exception => sdf.parse("01/01/1800")
+    }
   }
 
   def parseRx(rxStr: String): String = {
