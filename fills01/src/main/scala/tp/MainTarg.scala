@@ -8,15 +8,17 @@ import java.io.File
 // Version 2 added fields GPI, drugIsGeneric, rxNumber
 object MainTarg extends App {
   val CSV_HEADER: String = "Facility Id,Drug Class,Patient Name,Rx Number,PDC 12-Mo,PDC 6-Mo,Plan Bin,Plan Code,Plan Group,Last Sold Date,Last Days Supply,Patient Phone,Birth Date,Days Since Review,Note_1,Note_2,Note_3"
+  val VERBOSE: Boolean = false
 
   def readCSV(path: String): List[(String, RawPat)] = {
+    println(s"readCSV path = $path")
 
     val start1: Long = System.currentTimeMillis()
 
-    val stream = getClass.getResourceAsStream(path)
-    println(s"readCSV path = $path")
+    //    val stream = getClass.getResourceAsStream(path)
+    //    val lines = scala.io.Source.fromInputStream(stream).getLines
 
-    val lines = scala.io.Source.fromInputStream(stream).getLines
+    val lines = scala.io.Source.fromFile(path).getLines
     def filterFields(x: Array[String]): Boolean = {
       // ignore CSV file header line
       if (x(0) == "Facility Id") {
@@ -83,9 +85,9 @@ object MainTarg extends App {
     val matchPairs = for (pair <- pairs if (ref._2.matchPerson(pair._2))) yield { pair }
     matchPairs
   }
-  def compareCSV(file1: String, file2: String): Unit = {
-    val afterPats = readCSV("/" + file2 + ".csv");
-    val beforePats = readCSV("/" + file1 + ".csv");
+  def compareCSV(path: String, file1: String, file2: String): Unit = {
+    val afterPats = readCSV(path + "/CSV/" + file2 + ".csv");
+    val beforePats = readCSV(path + "/CSV/" + file1 + ".csv");
 
     def beforePatsDropped(): List[(String, RawPat)] = {
       val notInAfterList = for (pair <- beforePats if (pairsMatchingReferencePair(pair, afterPats).isEmpty)) yield { pair }
@@ -96,49 +98,49 @@ object MainTarg extends App {
       val notInList = for (pair <- afterPats if (pairsMatchingReferencePair(pair, beforePats).isEmpty)) yield { pair }
       notInList
     }
-    
+
     def changePatientDetails(): List[(String, String)] = {
-      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield { 
-        pairsMatchingReferencePair(pair, afterPats).map( pair2 => (pair, pair2 ) ).toList
+      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield {
+        pairsMatchingReferencePair(pair, afterPats).map(pair2 => (pair, pair2)).toList
       }
 
-      val listOfPairs: List[(String, String)] = 
-        for( l1 <- rowsBeforeAfter; l2 <- l1 if(!(l2._1._2.matchDetail(l2._2._2) ) ) ) yield { 
-          (l2._1._1, l2._2._1) 
-          }
+      val listOfPairs: List[(String, String)] =
+        for (l1 <- rowsBeforeAfter; l2 <- l1 if (!(l2._1._2.matchDetail(l2._2._2)))) yield {
+          (l2._1._1, l2._2._1)
+        }
       listOfPairs
     }
     def changePatientRx(): List[(String, String)] = {
-      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield { 
-        pairsMatchingReferencePair(pair, afterPats).map( pair2 => (pair, pair2 ) ).toList
+      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield {
+        pairsMatchingReferencePair(pair, afterPats).map(pair2 => (pair, pair2)).toList
       }
 
-      val listOfPairs: List[(String, String)] = 
-        for( l1 <- rowsBeforeAfter; l2 <- l1 if(!(l2._1._2.matchRx(l2._2._2) ) ) ) yield { 
-          (l2._1._1, l2._2._1) 
-          }
+      val listOfPairs: List[(String, String)] =
+        for (l1 <- rowsBeforeAfter; l2 <- l1 if (!(l2._1._2.matchRx(l2._2._2)))) yield {
+          (l2._1._1, l2._2._1)
+        }
       listOfPairs
     }
     def changePatientPlan(): List[(String, String)] = {
-      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield { 
-        pairsMatchingReferencePair(pair, afterPats).map( pair2 => (pair, pair2 ) ).toList
+      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield {
+        pairsMatchingReferencePair(pair, afterPats).map(pair2 => (pair, pair2)).toList
       }
 
-      val listOfPairs: List[(String, String)] = 
-        for( l1 <- rowsBeforeAfter; l2 <- l1 if(!(l2._1._2.matchPlan(l2._2._2) ) ) ) yield { 
-          (l2._1._1, l2._2._1) 
-          }
+      val listOfPairs: List[(String, String)] =
+        for (l1 <- rowsBeforeAfter; l2 <- l1 if (!(l2._1._2.matchPlan(l2._2._2)))) yield {
+          (l2._1._1, l2._2._1)
+        }
       listOfPairs
     }
     def changePatientPDC(): List[(String, String)] = {
-      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield { 
-        pairsMatchingReferencePair(pair, afterPats).map( pair2 => (pair, pair2 ) ).toList
+      val rowsBeforeAfter: List[List[((String, RawPat), (String, RawPat))]] = for (pair <- beforePats) yield {
+        pairsMatchingReferencePair(pair, afterPats).map(pair2 => (pair, pair2)).toList
       }
 
-      val listOfPairs: List[(String, String)] = 
-        for( l1 <- rowsBeforeAfter; l2 <- l1 if(!(l2._1._2.matchPDC(l2._2._2) ) ) ) yield { 
-          (l2._1._1, l2._2._1) 
-          }
+      val listOfPairs: List[(String, String)] =
+        for (l1 <- rowsBeforeAfter; l2 <- l1 if (!(l2._1._2.matchPDC(l2._2._2)))) yield {
+          (l2._1._1, l2._2._1)
+        }
       listOfPairs
     }
 
@@ -147,7 +149,7 @@ object MainTarg extends App {
 
     val afterAdded = afterPatsAdded()
     println(s"afterAdded.size = ${afterAdded.size} ");
-    
+
     val changedDetails = changePatientDetails();
     println(s"changedDetails.size = ${changedDetails.size} ")
 
@@ -161,43 +163,65 @@ object MainTarg extends App {
     println(s"changedPDC.size = ${changedPDC.size} ")
 
     def writePatientCSVFile(filepath: String, patients: List[(String, RawPat)]): Unit = {
-      val pw = new PrintWriter(new File(filepath))
-      pw.println(CSV_HEADER)
-      patients.foreach {
-        pat => pw.println(pat._1)
+      if (!patients.isEmpty) {
+        val pw = new PrintWriter(new File(filepath))
+        pw.println(CSV_HEADER)
+        patients.foreach {
+          pat => pw.println(pat._1)
+        }
+        pw.close()
       }
-      pw.close()
     }
     def writeDetailsCSVFile(filepath: String, patients: List[(String, String)]): Unit = {
-      val pw = new PrintWriter(new File(filepath))
-      pw.println(CSV_HEADER)
-      patients.foreach {
-        pat => {
-          pw.println(pat._1)
-          pw.println(pat._2)
+      if (!patients.isEmpty) {
+        val pw = new PrintWriter(new File(filepath))
+        pw.println(CSV_HEADER)
+        patients.foreach {
+          pat =>
+            {
+              pw.println(pat._1)
+              pw.println(pat._2)
+            }
         }
+        pw.close()
       }
-      pw.close()
     }
 
-    writePatientCSVFile("output/" + file2 + "_ADDED.csv", afterAdded);
+    writePatientCSVFile(path + "/output3/" + file2 + "_ADDED.csv", afterAdded);
 
-    writePatientCSVFile("output/" + file2 + "_DROPPED.csv", beforeDropped);
-    
-    writeDetailsCSVFile("output2/" + file2 + "_CHANGED.csv", changedDetails);
+    writePatientCSVFile(path + "/output3/" + file2 + "_DROPPED.csv", beforeDropped);
 
-    writeDetailsCSVFile("output2/" + file2 + "_CHANGED_RX.csv", changedRx);
+    if (VERBOSE) {
+      writeDetailsCSVFile(path + "/output2/" + file2 + "_CHANGED.csv", changedDetails);
+      writeDetailsCSVFile(path + "/output2/" + file2 + "_CHANGED_RX.csv", changedRx);
+      writeDetailsCSVFile(path + "/output2/" + file2 + "_CHANGED_PLAN.csv", changedPlan);
+    }
 
-    writeDetailsCSVFile("output2/" + file2 + "_CHANGED_PLAN.csv", changedPlan);
-
-    writeDetailsCSVFile("output2/" + file2 + "_CHANGED_PDC.csv", changedPDC);
+    writeDetailsCSVFile(path + "/output3/" + file2 + "_CHANGED_PDC.csv", changedPDC);
 
   }
-  
-  compareCSV("CHOL_BEFORE_table_export", "CHOL_AFTER_table_export");
-  compareCSV("DIAB_BEFORE_table_export", "DIAB_AFTER_table_export");
-  compareCSV("HRM_BEFORE_table_export", "HRM_AFTER_table_export");
-  compareCSV("HYP_BEFORE_table_export", "HYP_AFTER_table_export");
-  compareCSV("SUPD_BEFORE_table_export", "SUPD_AFTER_table_export");
+  def makeOutputDirs(path: String): Unit = {
+    val dirs: List[String] = List("output", "output2", "output3")
+    dirs.foreach { x =>
+      {
+        val filepath: String = path + "/" + x
+        val f: java.io.File = new File(filepath)
+        f.mkdirs()
+      }
+    }
+  }
+
+  def compareDataSet(path: String): Unit = {
+    makeOutputDirs(path);
+    compareCSV(path, "CHOL_BEFORE_table_export", "CHOL_AFTER_table_export");
+    compareCSV(path, "DIAB_BEFORE_table_export", "DIAB_AFTER_table_export");
+    compareCSV(path, "HRM_BEFORE_table_export", "HRM_AFTER_table_export");
+    compareCSV(path, "HYP_BEFORE_table_export", "HYP_AFTER_table_export");
+    compareCSV(path, "SUPD_BEFORE_table_export", "SUPD_AFTER_table_export");
+  }
+
+  compareDataSet("D:/LOGS/LOGS_2017_08_AUG/LOG_AUG14/HEB/S91");
+  compareDataSet("D:/LOGS/LOGS_2017_08_AUG/LOG_AUG14/HEB/S102");
+
 }
 
