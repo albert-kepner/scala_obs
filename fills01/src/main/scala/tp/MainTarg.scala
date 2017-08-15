@@ -220,8 +220,9 @@ object MainTarg extends App {
     compareCSV(path, "SUPD_BEFORE_table_export", "SUPD_AFTER_table_export");
   }
 
-  compareDataSet("D:/LOGS/LOGS_2017_08_AUG/LOG_AUG14/HEB/S91");
-  compareDataSet("D:/LOGS/LOGS_2017_08_AUG/LOG_AUG14/HEB/S102");
+//  compareDataSet("D:/LOGS/LOGS_2017_08_AUG/LOG_AUG14/QA");
+  compareDataSet("D:/LOGS/LOGS_2017_08_AUG/LOG_AUG15/HEB/S91");
+  compareDataSet("D:/LOGS/LOGS_2017_08_AUG/LOG_AUG15/HEB/S102");
 
 }
 

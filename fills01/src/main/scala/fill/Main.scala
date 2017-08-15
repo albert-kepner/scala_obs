@@ -44,9 +44,8 @@ object Main extends App {
 
     val fills = fields.map(fieldsToFill)
     def noop (x: Any):Unit = {}
-//    val foo = fills.take(447000)
-    fills.take(6000).foreach( noop(_))
-    fills.take(5000).foreach(println(_))
+//    fills.take(6000).foreach( noop(_))
+    fills.take(100).foreach(println(_))
     println(s"fills.size = ${fills.size}")
 
     val end1: Long = System.currentTimeMillis()
@@ -57,7 +56,7 @@ object Main extends App {
 
   }
 
-  readFills("/QA_FILL_DATA_18MONTHS.csv")
+  readFills("/QA_TEST_FILLS_AUG15.csv")
 
 }
 

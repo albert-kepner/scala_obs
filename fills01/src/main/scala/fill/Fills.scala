@@ -6,9 +6,14 @@ import java.util.Date
 object RawFill {
   
   val sdf: SimpleDateFormat = new SimpleDateFormat("M/d/yyyy")
-  
-  def dateParse(dateStr: String) : java.util.Date = {
-    sdf.parse(dateStr)
+  val sdf2: SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd")
+
+    def dateParse(dateStr: String): String = {
+    try {
+      sdf2.format(sdf.parse(dateStr))
+    } catch {
+      case e: Exception => "1800-01-01"
+    }
   }
   
 }
@@ -16,24 +21,16 @@ object RawFill {
 case class RawFill(
     patientId: String, 
     facilityId: String, 
-    soldDate: Date,
+    soldDate: String,
     daysSupply: String, 
     drugClass: String, 
     drugNDC: String,
     drugName: String,
     gpi: String,
-    drugIsGeneric: String,
+    genericDrugCategory: String,
     rxNumber: String,
-    birthDate: Date,
+    birthDate: String,
     firstName: String, 
     lastName: String) {
-  
-//  def soldDate: java.util.Date = {
-//    RawFill.dateParse(soldDateStr)
-//  }
-//  
-//  def birthDate: java.util.Date = {
-//    RawFill.dateParse(birthDateStr)
-//  }
-  
+    
 }
